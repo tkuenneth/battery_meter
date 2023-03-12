@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Battery Meter</string>
+    <string name="description">A battery meter</string>
+    <string name="welcome">Welcome to Battery Meter</string>
+    <string name="fetching_data">Fetching data</string>
+</resources>

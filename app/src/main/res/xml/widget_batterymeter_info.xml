@@ -1,0 +1,15 @@
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="40dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="1"
+    android:maxResizeWidth="110dp"
+    android:maxResizeHeight="40dp"
+    android:updatePeriodMillis="0"
+    android:description="@string/description"
+    android:previewLayout="@layout/widget_batterymeter_initial"
+    android:initialLayout="@layout/widget_batterymeter_initial"
+    android:resizeMode="none"
+    android:widgetCategory="home_screen"
+    android:widgetFeatures="reconfigurable|configuration_optional">
+</appwidget-provider>
