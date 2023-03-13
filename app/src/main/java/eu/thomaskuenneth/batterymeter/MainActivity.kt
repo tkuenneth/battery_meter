@@ -50,8 +50,8 @@ fun Context.updateBatteryMeterWidgets() {
         val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
         level * 100 / scale.toFloat()
     }
-    batteryPercent?.let {
-        MainScope().launch {
+    MainScope().launch {
+        batteryPercent?.let {
             GlanceAppWidgetManager(this@updateBatteryMeterWidgets).getGlanceIds(BatteryMeterWidget::class.java)
                 .forEach { glanceId ->
                     updateAppWidgetState(
@@ -59,6 +59,8 @@ fun Context.updateBatteryMeterWidgets() {
                         glanceId = glanceId,
                     ) { preferences ->
                         preferences[BatteryMeterWidgetReceiver.batteryPercent] = batteryPercent
+                        preferences[BatteryMeterWidgetReceiver.lastUpdatedMillis] =
+                            System.currentTimeMillis()
                     }
                 }
             BatteryMeterWidget().updateAll(this@updateBatteryMeterWidgets)
