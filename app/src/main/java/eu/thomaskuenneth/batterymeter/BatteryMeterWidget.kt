@@ -1,5 +1,7 @@
 package eu.thomaskuenneth.batterymeter
 
+import android.appwidget.AppWidgetManager
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -7,21 +9,18 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.glance.GlanceModifier
 import androidx.glance.LocalContext
+import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.background
 import androidx.glance.currentState
-import androidx.glance.layout.Alignment
-import androidx.glance.layout.Box
-import androidx.glance.layout.Column
-import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.*
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.Text
 import eu.thomaskuenneth.batterymeter.BatteryMeterWidgetReceiver.Companion.batteryPercent
 import eu.thomaskuenneth.batterymeter.BatteryMeterWidgetReceiver.Companion.lastUpdatedMillis
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
 class BatteryMeterWidget : GlanceAppWidget() {
 
@@ -45,9 +44,7 @@ class BatteryMeterWidget : GlanceAppWidget() {
                         text = "${percent.toInt()}%"
                     )
                 } else {
-                    Text(
-                        text = context.getString(R.string.fetching_data)
-                    )
+                    CircularProgressIndicator()
                     SideEffect {
                         context.updateBatteryMeterWidgets()
                     }
@@ -65,6 +62,18 @@ class BatteryMeterWidget : GlanceAppWidget() {
 class BatteryMeterWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override val glanceAppWidget = BatteryMeterWidget()
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        // Important: this won't stay here, I just temporarily added it because I want to
+        // test if updates initiated by the system are affected by battery optimization
+        context.updateBatteryMeterWidgets()
+
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+    }
 
     companion object {
         val batteryPercent = floatPreferencesKey("batteryPercent")

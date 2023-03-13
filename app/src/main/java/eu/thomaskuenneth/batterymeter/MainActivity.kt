@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
-import androidx.glance.appwidget.updateAll
 import eu.thomaskuenneth.batterymeter.ui.theme.BatteryMeterTheme
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -35,7 +34,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Text(
                         text = stringResource(id = R.string.welcome),
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
@@ -61,9 +61,9 @@ fun Context.updateBatteryMeterWidgets() {
                         preferences[BatteryMeterWidgetReceiver.batteryPercent] = batteryPercent
                         preferences[BatteryMeterWidgetReceiver.lastUpdatedMillis] =
                             System.currentTimeMillis()
+                        BatteryMeterWidget().update(this@updateBatteryMeterWidgets, glanceId)
                     }
                 }
-            BatteryMeterWidget().updateAll(this@updateBatteryMeterWidgets)
         }
     }
 }

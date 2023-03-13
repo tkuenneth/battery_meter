@@ -5,7 +5,7 @@
     android:targetCellHeight="1"
     android:maxResizeWidth="110dp"
     android:maxResizeHeight="40dp"
-    android:updatePeriodMillis="0"
+    android:updatePeriodMillis="1800000"
     android:description="@string/description"
     android:previewLayout="@layout/widget_batterymeter_initial"
     android:initialLayout="@layout/widget_batterymeter_initial"
