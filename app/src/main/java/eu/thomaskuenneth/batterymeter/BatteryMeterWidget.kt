@@ -68,6 +68,8 @@ class BatteryMeterWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
+        context.appendTextToFile("onUpdate()")
+
         // Important: this won't stay here, I just temporarily added it because I want to
         // test if updates initiated by the system are affected by battery optimization
         context.updateBatteryMeterWidgets()
