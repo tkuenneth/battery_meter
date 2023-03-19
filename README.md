@@ -10,7 +10,7 @@ I will be documenting some of my learnings in this README.
 
 ## Update intervals
 
-### `android:updatePeriodMillis`
+### `android:updatePeriodMillis` ([UPDATE_PERIOD_MILLIS](https://github.com/tkuenneth/battery_meter/releases/tag/UPDATE_PERIOD_MILLIS))
 
 The intrinsic method of requesting appwidget updates is to set
 `android:updatePeriodMillis` inside the `<appwidget-provider>` tag. The documentation notes that
