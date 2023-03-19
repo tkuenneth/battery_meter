@@ -15,27 +15,40 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import eu.thomaskuenneth.batterymeter.ui.theme.BatteryMeterTheme
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import java.util.*
-
-private const val FILENAME = "log.txt"
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var viewModel: BatteryMeterViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val lines = readFile(FILENAME)
+        val factory = BatteryMeterViewModelFactory(LogRepository(applicationContext))
         setContent {
             BatteryMeterTheme {
-                BatteryMeterScreen(lines)
+                viewModel = viewModel(factory = factory)
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+                BatteryMeterScreen(
+                    lines = uiState.lines
+                )
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::viewModel.isInitialized)
+            viewModel.update()
     }
 }
 
@@ -88,24 +101,5 @@ fun Context.updateBatteryMeterWidgets() {
                     }
                 }
         }
-    }
-}
-
-fun Context.appendTextToFile(prefix: String) {
-    openFileOutput(FILENAME, Context.MODE_APPEND).use {
-        it.bufferedWriter().use { writer ->
-            writer.write("$prefix at ${Date()}")
-            writer.newLine()
-        }
-    }
-}
-
-private fun Context.readFile(name: String): List<String> {
-    return try {
-        openFileInput(name).use {
-            it.bufferedReader().readLines()
-        }
-    } catch (e: Exception) {
-        emptyList()
     }
 }

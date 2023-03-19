@@ -9,18 +9,24 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.glance.GlanceModifier
 import androidx.glance.LocalContext
+import androidx.glance.action.actionStartActivity
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.background
 import androidx.glance.currentState
-import androidx.glance.layout.*
+import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
+import androidx.glance.layout.Column
+import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.fillMaxWidth
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.Text
 import eu.thomaskuenneth.batterymeter.BatteryMeterWidgetReceiver.Companion.batteryPercent
 import eu.thomaskuenneth.batterymeter.BatteryMeterWidgetReceiver.Companion.lastUpdatedMillis
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class BatteryMeterWidget : GlanceAppWidget() {
 
@@ -32,7 +38,8 @@ class BatteryMeterWidget : GlanceAppWidget() {
         val updated = currentState(key = lastUpdatedMillis)
         val context = LocalContext.current
         Column(
-            modifier = GlanceModifier.fillMaxSize().background(color = Color.White),
+            modifier = GlanceModifier.fillMaxSize()
+                .background(color = Color.White),
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally
         ) {
             Box(
@@ -56,6 +63,11 @@ class BatteryMeterWidget : GlanceAppWidget() {
                 )
             }
         }
+        // workaround: setting clickable on the Column didn't work
+        Box(modifier = GlanceModifier.fillMaxSize()
+            .clickable(actionStartActivity<MainActivity>())) {
+        }
+        LocalContext.current.appendTextToFile("Content()")
     }
 }
 
@@ -69,11 +81,6 @@ class BatteryMeterWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         context.appendTextToFile("onUpdate()")
-
-        // Important: this won't stay here, I just temporarily added it because I want to
-        // test if updates initiated by the system are affected by battery optimization
-        context.updateBatteryMeterWidgets()
-
         super.onUpdate(context, appWidgetManager, appWidgetIds)
     }
 
