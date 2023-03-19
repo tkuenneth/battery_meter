@@ -13,7 +13,9 @@ import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
@@ -25,6 +27,8 @@ import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.Text
 import eu.thomaskuenneth.batterymeter.BatteryMeterWidgetReceiver.Companion.batteryPercent
 import eu.thomaskuenneth.batterymeter.BatteryMeterWidgetReceiver.Companion.lastUpdatedMillis
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -64,8 +68,10 @@ class BatteryMeterWidget : GlanceAppWidget() {
             }
         }
         // workaround: setting clickable on the Column didn't work
-        Box(modifier = GlanceModifier.fillMaxSize()
-            .clickable(actionStartActivity<MainActivity>())) {
+        Box(
+            modifier = GlanceModifier.fillMaxSize()
+                .clickable(actionStartActivity<MainActivity>())
+        ) {
         }
         LocalContext.current.appendTextToFile("Content()")
     }
@@ -80,12 +86,35 @@ class BatteryMeterWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        context.appendTextToFile("onUpdate()")
+        context.updateAppWidgetState()
         super.onUpdate(context, appWidgetManager, appWidgetIds)
     }
 
     companion object {
         val batteryPercent = floatPreferencesKey("batteryPercent")
         val lastUpdatedMillis = longPreferencesKey("lastUpdatedMillis")
+    }
+}
+
+fun Context.updateAppWidgetState(batteryPercent: Float = -1.0F) {
+    MainScope().launch {
+        val now = System.currentTimeMillis()
+        appendTextToFile("onUpdate()", now)
+        GlanceAppWidgetManager(this@updateAppWidgetState).getGlanceIds(BatteryMeterWidget::class.java)
+            .forEach { glanceId ->
+                updateAppWidgetState(
+                    context = this@updateAppWidgetState,
+                    glanceId = glanceId,
+                ) { preferences ->
+                    preferences[lastUpdatedMillis] =
+                        now
+                    if (batteryPercent >= 0.0F)
+                        preferences[BatteryMeterWidgetReceiver.batteryPercent] = batteryPercent
+                    BatteryMeterWidget().update(
+                        context = this@updateAppWidgetState,
+                        glanceId = glanceId
+                    )
+                }
+            }
     }
 }

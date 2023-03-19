@@ -14,10 +14,10 @@ class LogRepository(private val context: Context) {
     fun readFile() = context.readFile()
 }
 
-fun Context.appendTextToFile(prefix: String) {
+fun Context.appendTextToFile(prefix: String, now: Long = System.currentTimeMillis()) {
     openFileOutput(FILENAME, Context.MODE_APPEND).use {
         it.bufferedWriter().use { writer ->
-            writer.write("$prefix called at ${Date()}")
+            writer.write("$prefix called at ${Date(now)}")
             writer.newLine()
         }
     }

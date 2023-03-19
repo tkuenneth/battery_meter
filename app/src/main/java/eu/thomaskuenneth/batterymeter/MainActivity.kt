@@ -19,13 +19,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import eu.thomaskuenneth.batterymeter.ui.theme.BatteryMeterTheme
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -85,21 +81,6 @@ fun Context.updateBatteryMeterWidgets() {
         val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
         val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
         level * 100 / scale.toFloat()
-    }
-    MainScope().launch {
-        batteryPercent?.let {
-            GlanceAppWidgetManager(this@updateBatteryMeterWidgets).getGlanceIds(BatteryMeterWidget::class.java)
-                .forEach { glanceId ->
-                    updateAppWidgetState(
-                        context = this@updateBatteryMeterWidgets,
-                        glanceId = glanceId,
-                    ) { preferences ->
-                        preferences[BatteryMeterWidgetReceiver.batteryPercent] = batteryPercent
-                        preferences[BatteryMeterWidgetReceiver.lastUpdatedMillis] =
-                            System.currentTimeMillis()
-                        BatteryMeterWidget().update(this@updateBatteryMeterWidgets, glanceId)
-                    }
-                }
-        }
-    }
+    } ?: -1.0F
+    updateAppWidgetState(batteryPercent)
 }
