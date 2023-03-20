@@ -123,21 +123,23 @@ class BatteryMeterWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        super.onUpdate(context, appWidgetManager, appWidgetIds)
-        MainScope().launch {
-            val batteryStatus =
-                context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-            val batteryPercent = batteryStatus?.let { intent ->
-                val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-                val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-                level * 100 / scale.toFloat()
-            } ?: -1.0F
-            val now = System.currentTimeMillis()
+        val batteryStatus =
+            context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        val batteryPercent = batteryStatus?.let { intent ->
+            val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+            level * 100 / scale.toFloat()
+        } ?: -1.0F
+        val now = System.currentTimeMillis()
+        val job = MainScope().launch {
             context.appendTextToFile("onUpdate()", now)
             appWidgetIds.forEach { appWidgetId ->
                 GlanceAppWidgetManager(context).getGlanceIdBy(appWidgetId = appWidgetId)
                     .updateAppWidgetState(context, now, batteryPercent)
             }
+        }
+        job.invokeOnCompletion {
+            super.onUpdate(context, appWidgetManager, appWidgetIds)
         }
     }
 
