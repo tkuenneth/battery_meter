@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Battery Meter</string>
     <string name="description">A battery meter</string>
+    <string name="xml_description">A battery meter (XML)</string>
     <string name="no_messages">No messages</string>
 </resources>

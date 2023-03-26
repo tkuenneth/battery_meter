@@ -39,7 +39,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_batterymeter_info" />
+                android:resource="@xml/widget_xmlbatterymeter_info" />
         </receiver>
 
     </application>

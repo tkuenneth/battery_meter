@@ -1,5 +1,9 @@
 package eu.thomaskuenneth.batterymeter
 
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -42,6 +46,11 @@ class MainActivity : ComponentActivity() {
         if (::viewModel.isInitialized)
             viewModel.update()
     }
+
+    override fun onPause() {
+        super.onPause()
+        updateXMLBatteryMeterWidget()
+    }
 }
 
 @Composable
@@ -69,4 +78,14 @@ fun BatteryMeterScreen(lines: List<String>) {
                 }
             }
     }
+}
+
+fun Context.getBatteryStatusPercent(): Float {
+    val batteryStatus =
+        registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    return batteryStatus?.let { intent ->
+        val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+        val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+        level * 100 / scale.toFloat()
+    } ?: -1.0F
 }

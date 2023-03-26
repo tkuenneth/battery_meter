@@ -2,9 +2,6 @@ package eu.thomaskuenneth.batterymeter
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.BatteryManager
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -123,19 +120,12 @@ class BatteryMeterWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        val batteryStatus =
-            context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-        val batteryPercent = batteryStatus?.let { intent ->
-            val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-            val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-            level * 100 / scale.toFloat()
-        } ?: -1.0F
         val now = System.currentTimeMillis()
         val job = MainScope().launch {
             context.appendTextToFile("onUpdate()", now)
             appWidgetIds.forEach { appWidgetId ->
                 GlanceAppWidgetManager(context).getGlanceIdBy(appWidgetId = appWidgetId)
-                    .updateAppWidgetState(context, now, batteryPercent)
+                    .updateAppWidgetState(context, now, context.getBatteryStatusPercent())
             }
         }
         job.invokeOnCompletion {
