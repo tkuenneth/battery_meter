@@ -2,6 +2,7 @@ package eu.thomaskuenneth.batterymeter
 
 import android.content.Context
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest.Companion.MIN_PERIODIC_INTERVAL_MILLIS
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
@@ -24,8 +25,8 @@ class BatteryMeterWorker(
 
 fun enqueueUpdateXMLBatteryMeterWidgetRequest(context: Context) {
     val request = PeriodicWorkRequestBuilder<BatteryMeterWorker>(
-        10,
-        TimeUnit.MINUTES
+        MIN_PERIODIC_INTERVAL_MILLIS,
+        TimeUnit.MILLISECONDS
     ).build()
     WorkManager
         .getInstance(context)
