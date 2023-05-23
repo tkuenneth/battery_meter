@@ -110,12 +110,23 @@
 
     <TextView
         android:id="@+id/percent"
-        style="@android:style/TextAppearance.DeviceDefault.Large"
+        style="@android:style/TextAppearance.DeviceDefault.Medium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@id/pole"
+        android:textAlignment="center"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/last_updated"
+        style="@android:style/TextAppearance.DeviceDefault.Small"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:textAlignment="center"
         android:textColor="@color/black" />
 

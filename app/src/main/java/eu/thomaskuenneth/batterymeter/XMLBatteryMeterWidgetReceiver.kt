@@ -9,6 +9,8 @@ import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
 import java.lang.Float.max
+import java.text.DateFormat
+import java.util.Date
 
 class XMLBatteryMeterWidgetReceiver : AppWidgetProvider() {
 
@@ -19,6 +21,16 @@ class XMLBatteryMeterWidgetReceiver : AppWidgetProvider() {
         updateXMLBatteryMeterWidget(
             context = context, appWidgetManager = appWidgetManager, appWidgetIds = appWidgetIds
         )
+    }
+
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        enqueueUpdateXMLBatteryMeterWidgetRequest(context)
+    }
+
+    override fun onDisabled(context: Context) {
+        super.onDisabled(context)
+        cancelUpdateXMLBatteryWidgetRequest(context)
     }
 }
 
@@ -48,6 +60,7 @@ private fun updateXMLBatteryMeterWidget(
                 )
             }
             setTextViewText(R.id.percent, "${percent.toInt()} %")
+            setTextViewText(R.id.last_updated, DateFormat.getInstance().format(Date()))
             val pendingIntent = PendingIntent.getActivity(
                 context,
                 0,
