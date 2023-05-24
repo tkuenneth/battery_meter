@@ -61,6 +61,7 @@ private fun updateXMLBatteryMeterWidget(
             }
             setTextViewText(R.id.percent, "${percent.toInt()} %")
             setTextViewText(R.id.last_updated, DateFormat.getInstance().format(Date()))
+            context.appendTextToFile("updateXMLBatteryMeterWidget")
             val pendingIntent = PendingIntent.getActivity(
                 context,
                 0,
