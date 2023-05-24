@@ -60,8 +60,18 @@ private fun updateXMLBatteryMeterWidget(
                 )
             }
             setTextViewText(R.id.percent, "${percent.toInt()} %")
-            setTextViewText(R.id.last_updated, DateFormat.getInstance().format(Date()))
-            context.appendTextToFile("updateXMLBatteryMeterWidget")
+            with(context.getLastUpdated()) {
+                setTextViewText(
+                    R.id.last_updated, if (this != 0L)
+                        DateFormat.getInstance().format(Date(this))
+                    else
+                        context.getString(R.string.not_run)
+                )
+                context.appendTextToFile(
+                    prefix = "updateXMLBatteryMeterWidget",
+                    now = this
+                )
+            }
             val pendingIntent = PendingIntent.getActivity(
                 context,
                 0,

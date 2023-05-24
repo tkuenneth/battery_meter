@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit
 
 private const val WORK_NAME = "update-battery-meter-widget"
 
+private val PREFS_NAME = BatteryMeterWorker::class.java.simpleName
+private const val LAST_UPDATED = "last_updated"
+
 class BatteryMeterWorker(
     private val context: Context,
     workerParams: WorkerParameters,
@@ -18,10 +21,15 @@ class BatteryMeterWorker(
     Worker(context, workerParams) {
 
     override fun doWork(): Result {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+            .putLong(LAST_UPDATED, System.currentTimeMillis()).apply()
         context.updateXMLBatteryMeterWidget()
         return Result.success()
     }
 }
+
+fun Context.getLastUpdated() =
+    getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getLong(LAST_UPDATED, 0L)
 
 fun enqueueUpdateXMLBatteryMeterWidgetRequest(context: Context) {
     val request = PeriodicWorkRequestBuilder<BatteryMeterWorker>(
